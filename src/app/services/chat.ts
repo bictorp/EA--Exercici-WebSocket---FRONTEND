@@ -41,6 +41,10 @@ export class Chat {
     this.socket.emit('join-organization', organizacionId);
   }
 
+  joinChat(usuarioId: string, usuarioName: string): void {
+    this.socket.emit('join-chat', { id: usuarioId, name: usuarioName });
+  }
+
   sendMessage(mensaje: Mensaje): void {
     this.socket.emit('message', mensaje);
   }
@@ -72,6 +76,14 @@ export class Chat {
     return new Observable((observer) => {
       this.socket.on('message', (data: Mensaje) => {
         observer.next(data);
+      });
+    });
+  }
+
+  onActiveUsers(): Observable<any[]> {
+    return new Observable((observer) => {
+      this.socket.on('active-users', (users: any[]) => {
+        observer.next(users);
       });
     });
   }

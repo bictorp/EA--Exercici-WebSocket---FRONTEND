@@ -22,10 +22,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   public mensajes: Mensaje[] = [];
 
   public typingUser: string | null = null;
+  public usuariosActivos: any[] = [];
 
   private messageSub!: Subscription;
   private typingSub!: Subscription;
   private stopTypingSub!: Subscription;
+  private activeUsersSub!: Subscription;
   private typingTimeout: any;
 
   constructor(
@@ -54,6 +56,19 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.joinOrganization(this.organizacionActiva);
 
+    this.chatService.joinChat(this.usuarioActivo, this.usuarioActivoName);
+
+    this.activeUsersSub = this.chatService.onActiveUsers().subscribe((users: any[]) => {
+      // Filtrar duplicats per id
+      const seen = new Set<string>();
+      this.usuariosActivos = users.filter(u => {
+        if (seen.has(u.id)) return false;
+        seen.add(u.id);
+        return true;
+      });
+      this.cdr.detectChanges();
+    });
+
     this.messageSub = this.chatService.getMessages().subscribe((mensaje: Mensaje) => {
       this.mensajes.push(mensaje);
       this.scrollToBottom();
@@ -74,6 +89,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.messageSub) this.messageSub.unsubscribe();
     if (this.typingSub) this.typingSub.unsubscribe();
     if (this.stopTypingSub) this.stopTypingSub.unsubscribe();
+    if (this.activeUsersSub) this.activeUsersSub.unsubscribe();
     this.chatService.disconnect();
   }
 
