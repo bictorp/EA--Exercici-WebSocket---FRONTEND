@@ -1,4 +1,5 @@
 # ChatApp
+Se ha implementado IA (Gemini AI) para la corrección de código y tener una correcta comprensión del mismo.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
 
